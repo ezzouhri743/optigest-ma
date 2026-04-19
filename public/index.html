@@ -574,6 +574,18 @@ select.fc{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       </div>
     </div>
 
+    <!-- ROW : Évolution quantités vendues + achetées -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-title" style="margin-bottom:16px">
+        📦 Évolution des quantités — 6 derniers mois
+        <span style="display:flex;gap:14px;font-weight:400;text-transform:none;font-size:12px">
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;background:#38a169;border-radius:2px;display:inline-block"></span> Vendues</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;background:#3182ce;border-radius:2px;display:inline-block"></span> Achetées</span>
+        </span>
+      </div>
+      <div id="chart-qty-evolution" style="display:flex;align-items:flex-end;gap:6px;height:140px;padding-top:10px;position:relative"></div>
+    </div>
+
     <!-- ROW : Alertes stock + Derniers documents -->
     <div class="grid2">
       <div class="card" style="padding:0;overflow:hidden">
@@ -1417,6 +1429,22 @@ PR;Verre Progressif 1.50;Progressif</div>
               Ex: Total vendu = 50 · N = 5 mois → Moy = <strong>10/mois</strong><br>
               Coeff. 1.56 = 5 mois · Stock = 20 → Qté = (10×5)−20 = <strong>30 unités</strong>
             </span>
+          </div>
+
+          <!-- AUTO-REFRESH SETTING -->
+          <div class="setting-row" style="margin-top:16px">
+            <div class="setting-info">
+              <label>🔄 Rafraîchissement automatique</label>
+              <p>Synchronisation automatique des données entre utilisateurs. 0 = désactivé.</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <input class="fc" id="cfg-auto-refresh" type="number" min="0" max="60" value="5" style="width:70px;text-align:center;font-size:16px;font-weight:700"
+                oninput="APP_CONFIG.autoRefreshMin=parseInt(this.value)||0;stopAutoRefresh();startAutoRefresh();autoSave()">
+              <span style="font-size:12px;color:var(--muted)">min</span>
+            </div>
+          </div>
+          <div style="background:#f0fff4;border:1px solid #9ae6b4;border-radius:6px;padding:10px 14px;font-size:12px;color:#276749;margin-top:8px">
+            ✅ Si 2 utilisateurs travaillent en même temps, les données se synchronisent automatiquement toutes les <strong id="refresh-min-lbl">5</strong> minutes — stock, ventes, paiements.
           </div>
         <div style="display:none"><!-- spacer -->
             </div>
@@ -2646,7 +2674,49 @@ function buildDashboard(){
       `<div style="position:absolute;top:0;right:0;font-size:11px;font-weight:700;color:${col}">${sign} ${Math.abs(evoPct).toFixed(1)}% vs mois préc.</div>`);
   }
 
-  // ── Répartition ventes par REF (donut-like) ──
+  // ── Évolution quantités vendues + achetées sur 6 derniers mois ──
+  const qtyByMonthSale = {};
+  const qtyByMonthPurch = {};
+  MOVEMENTS.filter(m=>m.type==='sale'||m.type==='return').forEach(m=>{
+    const d=String(m.date||'');
+    let ym='';
+    if(d.includes('-')&&d.indexOf('-')===4) ym=d.substring(0,7);
+    else if(d.includes('/')) { const p=d.split('/'); ym=p[2]+'-'+p[1].padStart(2,'0'); }
+    if(ym) qtyByMonthSale[ym]=(qtyByMonthSale[ym]||0)+(m.type==='sale'?m.qty:-m.qty);
+  });
+  MOVEMENTS.filter(m=>m.type==='purchase').forEach(m=>{
+    const d=String(m.date||'');
+    let ym='';
+    if(d.includes('-')&&d.indexOf('-')===4) ym=d.substring(0,7);
+    else if(d.includes('/')) { const p=d.split('/'); ym=p[2]+'-'+p[1].padStart(2,'0'); }
+    if(ym) qtyByMonthPurch[ym]=(qtyByMonthPurch[ym]||0)+m.qty;
+  });
+  const evo6qty = last6.map(ym=>({
+    ym, label:fmtMonth(ym),
+    sold: Math.max(0, qtyByMonthSale[ym]||0),
+    bought: qtyByMonthPurch[ym]||0
+  }));
+  const maxQty = Math.max(...evo6qty.map(e=>Math.max(e.sold,e.bought)),1);
+  const qtyEl = document.getElementById('chart-qty-evolution');
+  if(qtyEl) {
+    qtyEl.innerHTML = evo6qty.map((e,i)=>{
+      const pctSold = Math.max(e.sold/maxQty*100,2);
+      const pctBought = Math.max(e.bought/maxQty*100,2);
+      const isCurrent = i===evo6qty.length-1;
+      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-align:center;white-space:nowrap">
+          <span style="color:#38a169">${e.sold>0?e.sold:''}</span>
+          ${e.sold>0&&e.bought>0?'<br>':''}
+          <span style="color:#3182ce">${e.bought>0?e.bought:''}</span>
+        </div>
+        <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:90px">
+          <div style="flex:1;height:${pctSold.toFixed(0)}%;min-height:4px;background:#38a169;border-radius:3px 3px 0 0;transition:height .4s" title="Vendues ${e.label}: ${e.sold} unités"></div>
+          <div style="flex:1;height:${pctBought.toFixed(0)}%;min-height:4px;background:#3182ce;border-radius:3px 3px 0 0;transition:height .4s" title="Achetées ${e.label}: ${e.bought} unités"></div>
+        </div>
+        <div style="font-size:10px;color:${isCurrent?'var(--accent)':'var(--muted)'};font-weight:${isCurrent?700:400}">${e.label}</div>
+      </div>`;
+    }).join('');
+  }
   const refSplit = {};
   saleMov.forEach(m=>{ refSplit[m.ref]=(refSplit[m.ref]||0)+m.qty*(m.pv||0)*(1-(m.discount||0)/100); });
   const refEntries = Object.entries(refSplit).sort((a,b)=>b[1]-a[1]);
@@ -5670,7 +5740,52 @@ function buildNvsN1() {
 // SUIVI MENSUEL DES BÉNÉFICES
 // =========================================================
 let SUIVI_CATALOG_REFS = [];
-let APP_CONFIG = { blPrefix:'BL', blSep:'-', blPad:4, blStart:1, achPrefix:'ACH', achSep:'-', achPad:4, achStart:1, avgMonths:3, companyName:'OptiGest', ownerName:'EZZOUHRI' };
+let APP_CONFIG = { blPrefix:'BL', blSep:'-', blPad:4, blStart:1, achPrefix:'ACH', achSep:'-', achPad:4, achStart:1, avgMonths:3, companyName:'OptiGest', ownerName:'EZZOUHRI', autoRefreshMin:5 };
+
+// =========================================================
+// AUTO-REFRESH — Rafraîchissement automatique depuis Neon
+// =========================================================
+let _autoRefreshTimer = null;
+
+function startAutoRefresh() {
+  stopAutoRefresh();
+  const mins = parseInt(APP_CONFIG.autoRefreshMin) || 5;
+  if (mins <= 0) return;
+  _autoRefreshTimer = setInterval(async () => {
+    if (!currentUser) return;
+    const data = await apiCall('/load');
+    if (!data) return;
+    if (data.movements && data.movements.length !== MOVEMENTS.length) {
+      // Nouvelles données détectées — rechargement silencieux
+      if (data.products && data.products.length) { PRODUCTS.length=0; PRODUCTS.push(...data.products); }
+      if (data.customers && data.customers.length) { CUSTOMERS.length=0; CUSTOMERS.push(...data.customers); }
+      if (data.suppliers && data.suppliers.length) { SUPPLIERS.length=0; SUPPLIERS.push(...data.suppliers); }
+      if (data.movements && data.movements.length) {
+        MOVEMENTS.length=0; MOVEMENTS.push(...data.movements);
+        _mid = Math.max(...data.movements.map(m=>m.id||0)) + 1;
+      }
+      if (data.payments && data.payments.length) { PAYMENTS.length=0; PAYMENTS.push(...data.payments); }
+      if (data.supplier_payments && data.supplier_payments.length) { SUPPLIER_PAYMENTS.length=0; SUPPLIER_PAYMENTS.push(...data.supplier_payments); }
+      if (data.natures && data.natures.length) { NATURES.length=0; NATURES.push(...data.natures); }
+      refreshAllRefDropdowns();
+      updateAlertBar();
+      // Refresh current page
+      const activePage = document.querySelector('.page.active');
+      if (activePage) {
+        const pageId = activePage.id.replace('page-','');
+        if (pageId === 'dashboard') buildDashboard();
+        else if (pageId === 'stock') { buildStockData(); filterStock(); }
+        else if (pageId === 'payments') buildPayments();
+        else if (pageId === 'supplierpay') buildSupplierPayments();
+      }
+      showNotif('🔄 Données mises à jour automatiquement', 'info');
+    }
+  }, mins * 60 * 1000);
+}
+
+function stopAutoRefresh() {
+  if (_autoRefreshTimer) { clearInterval(_autoRefreshTimer); _autoRefreshTimer = null; }
+}
 
 function persistSuiviConfig() {
   const v = (document.getElementById('suivi-catalog-refs')||{}).value || '';
@@ -6325,6 +6440,9 @@ function initSettingsCfg(){
   set('cfg-avg-months', APP_CONFIG.avgMonths||3);
   set('cfg-company-name', APP_CONFIG.companyName||'OptiGest');
   set('cfg-owner-name',   APP_CONFIG.ownerName||'');
+  set('cfg-auto-refresh', APP_CONFIG.autoRefreshMin||5);
+  const lbl = document.getElementById('refresh-min-lbl');
+  if(lbl) lbl.textContent = APP_CONFIG.autoRefreshMin||5;
   _updatePreviews();
 }
 
@@ -7585,10 +7703,12 @@ function doLogin() {
     refreshAllRefDropdowns();
     updateAlertBar();
     nav(firstPage);
+    startAutoRefresh(); // Démarrer le rafraîchissement automatique
   });
 }
 
 function doLogout() {
+  stopAutoRefresh();
   currentUser = null;
   document.getElementById('login-user').value = '';
   document.getElementById('login-pass').value = '';
