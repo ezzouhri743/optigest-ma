@@ -317,9 +317,122 @@ select.fc{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .toggle.on::after{transform:translateX(20px)}
 
-/* RESPONSIVE */
-@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.grid32{grid-template-columns:1fr}}
-@media(max-width:768px){.sb{transform:translateX(-100%)}.main{margin-left:0}.gt{font-size:11px}}
+/* ============================================================
+   RESPONSIVE — MOBILE FIRST
+   ============================================================ */
+
+/* Hamburger button (mobile only) */
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:6px;border-radius:6px;color:var(--primary);font-size:22px;line-height:1;flex-shrink:0}
+.hamburger:hover{background:var(--bg)}
+
+/* Sidebar overlay (mobile) */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
+.sb-overlay.open{display:block}
+
+@media(max-width:1200px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .grid2,.grid3,.grid32{grid-template-columns:1fr}
+}
+
+@media(max-width:768px){
+  /* ---- SIDEBAR ---- */
+  .sb{transform:translateX(-100%);transition:transform .25s ease;z-index:200}
+  .sb.open{transform:translateX(0)}
+  
+  /* ---- MAIN ---- */
+  .main{margin-left:0}
+  
+  /* ---- HAMBURGER ---- */
+  .hamburger{display:flex;align-items:center;justify-content:center}
+  
+  /* ---- TOPBAR ---- */
+  .topbar{padding:0 10px;height:50px}
+  .topbar-title{font-size:13px}
+  .date-badge{display:none}
+  .user-badge{max-width:110px;font-size:10px}
+  
+  /* ---- PAGE ---- */
+  .page{padding:12px 14px}
+  .page-hdr{margin-bottom:12px}
+  .page-hdr-left h2{font-size:16px}
+  
+  /* ---- KPI ---- */
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+  .kpi{padding:12px 14px}
+  .kpi-val{font-size:20px}
+  .kpi-icon{font-size:18px;margin-bottom:4px}
+  
+  /* ---- GRIDS ---- */
+  .grid2,.grid3,.grid32{grid-template-columns:1fr;gap:12px}
+  
+  /* ---- TABLES ---- */
+  .gt{font-size:11px}
+  .gt thead th{padding:7px 4px;font-size:10px}
+  .gt td{padding:2px 2px}
+  .gt td input,.gt td select{font-size:11px;padding:4px 4px}
+  .tbl td,.tbl thead th{padding:7px 8px;font-size:12px}
+  
+  /* ---- SALES FOOTER ---- */
+  .sales-foot{flex-direction:column;gap:10px;align-items:stretch;padding:12px}
+  .total-val{font-size:22px}
+  .btns{flex-wrap:wrap;gap:6px}
+  .btns .btn{flex:1;justify-content:center;min-width:120px}
+  
+  /* ---- FORM ---- */
+  .form-row{flex-direction:column;gap:8px}
+  .fg{width:100%}
+  .fc{width:100%;font-size:14px;padding:9px 12px}
+  
+  /* ---- BUTTONS ---- */
+  .btn{font-size:12px;padding:8px 12px}
+  .btn-sm{font-size:12px;padding:7px 11px}
+  
+  /* ---- CARDS ---- */
+  .card{padding:12px 14px}
+  
+  /* ---- MODALS ---- */
+  .modal{width:100% !important;max-width:100vw;max-height:95vh;border-radius:12px 12px 0 0;margin-top:auto}
+  .modal-bg{align-items:flex-end}
+  .modal-body{padding:16px}
+  .modal-hdr{padding:14px 16px}
+  .modal-foot{padding:12px 16px}
+  
+  /* ---- MATRIX ---- */
+  .matrix-outer{max-height:calc(100vh - 220px)}
+  .matrix-ctrl{gap:8px}
+  .mt{font-size:10px}
+  .mt th{padding:6px 8px;font-size:10px}
+  .mc{min-height:48px;padding:3px 4px}
+  .mc-v{font-size:11px}
+  
+  /* ---- CHARTS ---- */
+  .cbar-lbl{width:100px;font-size:11px}
+  
+  /* ---- NOTIF ---- */
+  .notif{bottom:12px;right:12px;left:12px;max-width:none;font-size:12px}
+  
+  /* ---- IMPORT ---- */
+  .drop-zone{padding:24px 16px}
+  .dz-icon{font-size:32px;margin-bottom:8px}
+  
+  /* ---- TABS ---- */
+  .tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+  .tab{white-space:nowrap;padding:8px 14px;font-size:12px}
+  
+  /* ---- SETTINGS ---- */
+  .setting-row{flex-wrap:wrap;gap:8px}
+  
+  /* ---- LOGIN ---- */
+  .login-box{padding:28px 22px;border-radius:12px}
+  .login-title{font-size:22px}
+  .login-logo{font-size:40px}
+  
+  /* ---- DOC HEADER ---- */
+  .doc-hdr{padding:10px 12px}
+  
+  /* ---- PRINT ---- */
+  .print-actions{padding:10px 14px;flex-wrap:wrap}
+}
 
 /* PRINT */
 @media print{.sb,.topbar,.sales-foot .btns,.btn-del,.add-row-btn,.notif,.page-hdr,.doc-hdr,.grid-wrap thead th:last-child,.ra{display:none !important}.main{margin-left:0}.page.active{display:block !important}.print-bl-only{display:block !important}}
@@ -341,50 +454,53 @@ select.fc{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   </div>
   <nav class="sb-nav">
     <div class="nav-sec">Accueil</div>
-    <div class="nav-item active" onclick="nav('dashboard')"><span class="nav-icon">📊</span> Tableau de bord</div>
-    <div class="nav-item" onclick="nav('sales')"><span class="nav-icon">🧾</span> Saisie des ventes</div>
+    <div class="nav-item active" onclick="closeSidebar();nav('dashboard')"><span class="nav-icon">📊</span> Tableau de bord</div>
+    <div class="nav-item" onclick="closeSidebar();nav('sales')"><span class="nav-icon">🧾</span> Saisie des ventes</div>
     <div class="nav-sec">Analyse & Stock</div>
-    <div class="nav-item" onclick="nav('matrix')"><span class="nav-icon">📋</span> Matrice de gestion</div>
-    <div class="nav-item" onclick="nav('stock')"><span class="nav-icon">📦</span> État du stock</div>
-    <div class="nav-item" onclick="nav('coverage')"><span class="nav-icon">🔭</span> Couverture stock</div>
-    <div class="nav-item" onclick="nav('movements')"><span class="nav-icon">📜</span> Historique mouvements</div>
-    <div class="nav-item" onclick="nav('salesanalysis')"><span class="nav-icon">📈</span> Analyse des ventes</div>
-    <div class="nav-item" onclick="nav('orders')"><span class="nav-icon">🔄</span> Réapprovisionnement</div>
+    <div class="nav-item" onclick="closeSidebar();nav('matrix')"><span class="nav-icon">📋</span> Matrice de gestion</div>
+    <div class="nav-item" onclick="closeSidebar();nav('stock')"><span class="nav-icon">📦</span> État du stock</div>
+    <div class="nav-item" onclick="closeSidebar();nav('coverage')"><span class="nav-icon">🔭</span> Couverture stock</div>
+    <div class="nav-item" onclick="closeSidebar();nav('movements')"><span class="nav-icon">📜</span> Historique mouvements</div>
+    <div class="nav-item" onclick="closeSidebar();nav('salesanalysis')"><span class="nav-icon">📈</span> Analyse des ventes</div>
+    <div class="nav-item" onclick="closeSidebar();nav('orders')"><span class="nav-icon">🔄</span> Réapprovisionnement</div>
     <div class="nav-sec">Achats</div>
-    <div class="nav-item" onclick="nav('purchases')"><span class="nav-icon">🛒</span> Achats fournisseurs</div>
-    <div class="nav-item" onclick="nav('supplierpay')"><span class="nav-icon">🏦</span> Paiements fournisseurs</div>
+    <div class="nav-item" onclick="closeSidebar();nav('purchases')"><span class="nav-icon">🛒</span> Achats fournisseurs</div>
+    <div class="nav-item" onclick="closeSidebar();nav('supplierpay')"><span class="nav-icon">🏦</span> Paiements fournisseurs</div>
     <div class="nav-sec">Ventes</div>
-    <div class="nav-item" onclick="nav('payments')"><span class="nav-icon">💳</span> Paiements clients</div>
-    <div class="nav-item" onclick="nav('facture')"><span class="nav-icon">🧾</span> Facture périodique</div>
+    <div class="nav-item" onclick="closeSidebar();nav('payments')"><span class="nav-icon">💳</span> Paiements clients</div>
+    <div class="nav-item" onclick="closeSidebar();nav('facture')"><span class="nav-icon">🧾</span> Facture périodique</div>
     <div class="nav-sec">Analyses avancées</div>
-    <div class="nav-item" onclick="nav('abc')"><span class="nav-icon">🏆</span> Analyse ABC</div>
-    <div class="nav-item" onclick="nav('nvn1')"><span class="nav-icon">📉</span> Comparaison N vs N-1</div>
-    <div class="nav-item" onclick="nav('suivi')"><span class="nav-icon">💰</span> Suivi bénéfices</div>
-    <div class="nav-item" onclick="nav('reappromatrix')"><span class="nav-icon">📋</span> Matrice réappro</div>
+    <div class="nav-item" onclick="closeSidebar();nav('abc')"><span class="nav-icon">🏆</span> Analyse ABC</div>
+    <div class="nav-item" onclick="closeSidebar();nav('nvn1')"><span class="nav-icon">📉</span> Comparaison N vs N-1</div>
+    <div class="nav-item" onclick="closeSidebar();nav('suivi')"><span class="nav-icon">💰</span> Suivi bénéfices</div>
+    <div class="nav-item" onclick="closeSidebar();nav('reappromatrix')"><span class="nav-icon">📋</span> Matrice réappro</div>
     <div class="nav-sec">Données</div>
-    <div class="nav-item" onclick="nav('import')"><span class="nav-icon">📥</span> Importer données</div>
-    <div class="nav-item" onclick="nav('settings')"><span class="nav-icon">⚙️</span> Paramètres</div>
+    <div class="nav-item" onclick="closeSidebar();nav('import')"><span class="nav-icon">📥</span> Importer données</div>
+    <div class="nav-item" onclick="closeSidebar();nav('settings')"><span class="nav-icon">⚙️</span> Paramètres</div>
   </nav>
   
-<div id="sb-alert-bar" onclick="nav('stock')" style="display:none;padding:7px 14px;background:#e53e3e;color:#fff;font-size:11px;font-weight:700;cursor:pointer;border-top:1px solid rgba(255,255,255,.2);text-align:center">
+<div id="sb-alert-bar" onclick="closeSidebar();nav('stock')" style="display:none;padding:7px 14px;background:#e53e3e;color:#fff;font-size:11px;font-weight:700;cursor:pointer;border-top:1px solid rgba(255,255,255,.2);text-align:center">
   🔴 <span id="sb-alert-count"></span> rupture(s)
 </div>
-<div id="sb-warn-bar" onclick="nav('stock')" style="display:none;padding:6px 14px;background:#dd6b20;color:#fff;font-size:11px;font-weight:600;cursor:pointer;text-align:center">
+<div id="sb-warn-bar" onclick="closeSidebar();nav('stock')" style="display:none;padding:6px 14px;background:#dd6b20;color:#fff;font-size:11px;font-weight:600;cursor:pointer;text-align:center">
   ⚠ <span id="sb-warn-count"></span> stock(s) bas
 </div>
 <div class="sb-footer">OptiGest v5.0<br>© 2026 — Toutes données sauvegardées</div>
 </aside>
 
+<!-- Sidebar overlay for mobile -->
+<div class="sb-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
+
 <main class="main">
   <div class="topbar">
     <div class="topbar-left">
+      <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">☰</button>
       <div class="topbar-title" id="topbar-title">Tableau de bord</div>
     </div>
     <div class="topbar-right">
       <span class="date-badge" id="today-date"></span>
-      
       <div class="user-badge" id="user-badge-btn" onclick="currentUser&&currentUser.role==='admin'?nav('settings'):showNotif('Seul un administrateur peut gérer les utilisateurs','warn')">👤 <span id="topbar-username">—</span> ▾</div>
-      <button class="btn btn-outline btn-sm" onclick="doLogout()" title="Déconnexion" style="padding:3px 8px;font-size:11px">🔒 Quitter</button>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()" title="Déconnexion" style="padding:3px 8px;font-size:11px">🔒</button>
     </div>
   </div>
 
@@ -407,9 +523,9 @@ select.fc{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
         Commencez par importer vos fichiers CSV pour alimenter OptiGest.
       </p>
       <div class="btns" style="justify-content:center;gap:12px">
-        <button class="btn btn-primary" onclick="nav('import')">📥 Importer des données</button>
-        <button class="btn btn-outline" onclick="nav('purchases')">➕ Saisir un bon d'achat</button>
-        <button class="btn btn-outline" onclick="nav('sales')">➕ Saisir une vente</button>
+        <button class="btn btn-primary" onclick="closeSidebar();nav('import')">📥 Importer des données</button>
+        <button class="btn btn-outline" onclick="closeSidebar();nav('purchases')">➕ Saisir un bon d'achat</button>
+        <button class="btn btn-outline" onclick="closeSidebar();nav('sales')">➕ Saisir une vente</button>
       </div>
       <div style="margin-top:18px;font-size:12px;color:var(--muted);line-height:1.8">
         <strong>Ordre recommandé :</strong><br>
@@ -7577,6 +7693,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // Just show login; nav happens after login
   document.getElementById('login-user').focus();
 });
+
+// ---- MOBILE SIDEBAR ----
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const overlay = document.getElementById('sb-overlay');
+  sb.classList.toggle('open');
+  overlay.classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('open');
+}
+
+// Close sidebar on nav item click (mobile)
+const origNav = nav;
+window.navWithClose = function(page) {
+  closeSidebar();
+  origNav(page);
+};
 
 // Add reset button to settings page
 // Data & Persistence section is now in static HTML
